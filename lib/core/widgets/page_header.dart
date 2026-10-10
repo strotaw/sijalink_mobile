@@ -13,9 +13,24 @@ class PageHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Tinggi disamakan dengan header profil beranda (52px).
-    return SizedBox(
-      height: 52,
-      child: Stack(
+    return Padding(
+      padding:
+          const EdgeInsets.symmetric(horizontal: 12),
+      child: SizedBox(
+        height: 52,
+        child: _HeaderBody(title: title),
+      ),
+    );
+  }
+}
+
+class _HeaderBody extends StatelessWidget {
+  final String title;
+  const _HeaderBody({required this.title});
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
         alignment: Alignment.center,
         children: [
           Center(
@@ -57,7 +72,6 @@ class PageHeader extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
+      );
   }
 }

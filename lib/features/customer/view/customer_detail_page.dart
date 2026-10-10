@@ -21,14 +21,39 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
     final c = widget.customer;
     final aktif = c.status == 'Aktif';
     return Scaffold(
-      appBar: AppBar(title: Text(c.nama)),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          // --- Header ---
-          Container(
-            decoration: AppStyles.card,
-            padding: const EdgeInsets.all(20),
+      backgroundColor: AppColors.primaryDark,
+      appBar: AppBar(
+        title: Text(c.nama),
+        backgroundColor: AppColors.primary,
+        foregroundColor: Colors.white,
+      ),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              AppColors.primary,
+              AppColors.primaryDark
+            ],
+          ),
+        ),
+        child: ListView(
+          padding: const EdgeInsets.symmetric(
+              vertical: 16),
+          children: [
+            // --- Bubble identitas (terpisah) ---
+            Container(
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(30),
+                  topRight: Radius.circular(30),
+                  bottomLeft: Radius.circular(50),
+                  bottomRight: Radius.circular(50),
+                ),
+              ),
+              padding: const EdgeInsets.all(20),
             child: Row(
               children: [
                 CircleAvatar(
@@ -92,33 +117,12 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
           const SizedBox(height: 12),
 
           // --- Paket ---
-          Container(
-            decoration: AppStyles.card,
-            padding: const EdgeInsets.all(16),
-            child: Row(
+          _section('Paket', Icons.wifi_rounded, [
+            Row(
               children: [
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: AppColors.primary,
-                    borderRadius:
-                        BorderRadius.circular(20),
-                  ),
-                  child: const Icon(
-                      Icons.wifi_rounded,
-                      color: Colors.white,
-                      size: 24),
-                ),
-                const SizedBox(width: 12),
                 const Expanded(
-                  child: Column(
-                    crossAxisAlignment:
-                        CrossAxisAlignment.start,
-                    children: [
-                      Text('Paket Aktif',
-                          style: AppStyles.caption),
-                    ],
-                  ),
+                  child: Text('Paket Aktif',
+                      style: AppStyles.caption),
                 ),
                 Container(
                   padding: const EdgeInsets.symmetric(
@@ -135,10 +139,10 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
                 ),
               ],
             ),
-          ),
+          ]),
           const SizedBox(height: 12),
 
-          // --- Detail hardware / koneksi ---
+          // --- Detail hardware / koneksi (terpisah) ---
           _section(
               'Detail Hardware & Koneksi',
               Icons.router_rounded, [
@@ -152,92 +156,130 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
                 'Mikrotik', c.mikrotik),
           ]),
         ],
+        ),
       ),
     );
   }
 
+  /// Bubble putih full-bleed (atas 30, bawah 50);
+  /// judul section teks besar tanpa background.
   Widget _section(
       String title, IconData icon, List<Widget> rows) {
     return Container(
-      decoration: AppStyles.card,
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(30),
+          topRight: Radius.circular(30),
+          bottomLeft: Radius.circular(50),
+          bottomRight: Radius.circular(50),
+        ),
+      ),
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          const SizedBox(height: 8),
           Row(
             children: [
-              Icon(icon, color: AppColors.primary),
+              Icon(icon,
+                  color: AppColors.primary,
+                  size: 26),
               const SizedBox(width: 8),
-              Text(title, style: AppStyles.h3),
+              Text(title,
+                  style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.textDark)),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 20),
           ...rows,
         ],
       ),
     );
   }
 
+  /// Kotak teks biru: label putih redup + nilai putih.
   Widget _row(IconData icon, String label, String value,
       {VoidCallback? onTap}) {
-    return ListTile(
-      contentPadding: EdgeInsets.zero,
-      dense: true,
-      leading: Icon(icon, color: AppColors.primary),
-      title: Text(label, style: AppStyles.caption),
-      subtitle: Text(value,
-          style: const TextStyle(
-              fontWeight: FontWeight.w600,
-              fontSize: 14,
-              color: AppColors.textDark)),
-      trailing: onTap == null
-          ? null
-          : IconButton(
-              onPressed: onTap,
-              icon: const Icon(Icons.copy_rounded,
-                  size: 18,
-                  color: AppColors.textGrey),
-            ),
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      decoration: BoxDecoration(
+        color: AppColors.primary,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(
+            horizontal: 12, vertical: 4),
+        dense: true,
+        leading:
+            Icon(icon, color: Colors.white),
+        title: Text(label,
+            style: const TextStyle(
+                fontSize: 12,
+                color: Colors.white70)),
+        subtitle: Text(value,
+            style: const TextStyle(
+                fontWeight: FontWeight.w700,
+                fontSize: 15,
+                color: Colors.white)),
+        trailing: onTap == null
+            ? null
+            : IconButton(
+                onPressed: onTap,
+                icon: const Icon(Icons.copy_rounded,
+                    size: 18, color: Colors.white),
+              ),
+      ),
     );
   }
 
   Widget _pppoePassRow() {
     final pass = widget.customer.pppoePass;
-    return ListTile(
-      contentPadding: EdgeInsets.zero,
-      dense: true,
-      leading: const Icon(Icons.key_outlined,
-          color: AppColors.primary),
-      title:
-          const Text('PPPoE Password',
-              style: AppStyles.caption),
-      subtitle: Text(
-        _passVisible ? pass : '•' * pass.length,
-        style: const TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: 14,
-            color: AppColors.textDark),
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      decoration: BoxDecoration(
+        color: AppColors.primary,
+        borderRadius: BorderRadius.circular(16),
       ),
-      trailing: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          IconButton(
-            onPressed: () => setState(
-                () => _passVisible = !_passVisible),
-            icon: Icon(
-                _passVisible
-                    ? Icons.visibility_off_outlined
-                    : Icons.visibility_outlined,
-                size: 18,
-                color: AppColors.textGrey),
-          ),
-          IconButton(
-            onPressed: () => _copy(pass),
-            icon: const Icon(Icons.copy_rounded,
-                size: 18,
-                color: AppColors.textGrey),
-          ),
-        ],
+      child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(
+            horizontal: 12, vertical: 4),
+        dense: true,
+        leading: const Icon(Icons.key_outlined,
+            color: Colors.white),
+        title: const Text('PPPoE Password',
+            style: TextStyle(
+                fontSize: 12,
+                color: Colors.white70)),
+        subtitle: Text(
+          _passVisible ? pass : '•' * pass.length,
+          style: const TextStyle(
+              fontWeight: FontWeight.w700,
+              fontSize: 15,
+              color: Colors.white),
+        ),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconButton(
+              onPressed: () => setState(
+                  () => _passVisible = !_passVisible),
+              icon: Icon(
+                  _passVisible
+                      ? Icons.visibility_off_outlined
+                      : Icons.visibility_outlined,
+                  size: 18,
+                  color: Colors.white),
+            ),
+            IconButton(
+              onPressed: () => _copy(pass),
+              icon: const Icon(Icons.copy_rounded,
+                  size: 18, color: Colors.white),
+            ),
+          ],
+        ),
       ),
     );
   }

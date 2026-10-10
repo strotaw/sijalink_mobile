@@ -23,7 +23,18 @@ class ProfilePage extends StatelessWidget {
           const PageHeader(title: 'Profil'),
           const SizedBox(height: 50),
           Container(
-            decoration: AppStyles.card,
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.white,
+                  Color(0xFF2AA5CD),
+                ],
+              ),
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(color: AppColors.border),
+            ),
             padding: const EdgeInsets.all(20),
             child: const Column(
               children: [
@@ -45,7 +56,18 @@ class ProfilePage extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           Container(
-            decoration: AppStyles.card,
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.white,
+                  Color(0xFF2AA5CD),
+                ],
+              ),
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(color: AppColors.border),
+            ),
             child: const Column(
               children: [
                 ListTile(

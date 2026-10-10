@@ -6,8 +6,23 @@ import '../../../core/widgets/page_header.dart';
 import '../bloc/customer_cubit.dart';
 import 'customer_detail_page.dart';
 
-class CustomerPage extends StatelessWidget {
+class CustomerPage extends StatefulWidget {
   const CustomerPage({super.key});
+
+  @override
+  State<CustomerPage> createState() =>
+      _CustomerPageState();
+}
+
+class _CustomerPageState extends State<CustomerPage> {
+  final _scroll = ScrollController();
+
+  @override
+  void dispose() {
+    _scroll.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -29,7 +44,16 @@ class CustomerPage extends StatelessWidget {
               child: Container(
                 width: double.infinity,
                 decoration: const BoxDecoration(
-                  color: Colors.white,
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.white,
+                      Colors.white,
+                      Color(0xFF2AA5CD),
+                    ],
+                    stops: [0.0, 0.6, 1.0],
+                  ),
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(28),
                     topRight: Radius.circular(28),
@@ -121,7 +145,6 @@ class CustomerPage extends StatelessWidget {
                             .toList(),
                       ),
                     ),
-                    const SizedBox(height: 12),
                     Expanded(
                       child: s.filtered.isEmpty
                           ? const Center(
@@ -130,7 +153,15 @@ class CustomerPage extends StatelessWidget {
                                   style:
                                       AppStyles.caption),
                             )
-                          : ListView.builder(
+                          : Scrollbar(
+                              controller: _scroll,
+                              thumbVisibility: true,
+                              thickness: 6,
+                              radius:
+                                  const Radius.circular(
+                                      100),
+                              child: ListView.builder(
+                                controller: _scroll,
                         itemCount: s.filtered.length,
                         itemBuilder: (_, i) {
                           final c = s.filtered[i];
@@ -139,9 +170,14 @@ class CustomerPage extends StatelessWidget {
                           return Container(
                             margin:
                                 const EdgeInsets.only(
-                                    bottom: 10),
+                                    bottom: 16),
                             decoration:
-                                AppStyles.card,
+                                AppStyles.card.copyWith(
+                              border: Border.all(
+                                color: AppColors.border,
+                                width: 2,
+                              ),
+                            ),
                             child: ListTile(
                               shape:
                                   RoundedRectangleBorder(
@@ -172,45 +208,75 @@ class CustomerPage extends StatelessWidget {
                                       fontWeight:
                                           FontWeight.w600,
                                       fontSize: 14)),
-                              subtitle: Text(
-                                  '${c.id} • ${c.paket}',
-                                  style:
-                                      AppStyles.caption),
-                              trailing: Container(
-                                padding:
-                                    const EdgeInsets
-                                        .symmetric(
-                                            horizontal:
-                                                12,
-                                            vertical:
-                                                6),
-                                decoration:
-                                    BoxDecoration(
-                                        color: aktif
-                                            ? AppColors
-                                                .successBg
-                                            : AppColors
-                                                .dangerBg,
-                                        borderRadius:
-                                            BorderRadius
-                                                .circular(
-                                                    100)),
-                                child: Text(c.status,
-                                    style: TextStyle(
-                                        fontSize: 11,
-                                        fontWeight:
-                                            FontWeight
-                                                .w700,
-                                        color: aktif
-                                            ? AppColors
-                                                .success
-                                            : AppColors
-                                                .danger)),
+                              subtitle: Column(
+                                crossAxisAlignment:
+                                    CrossAxisAlignment
+                                        .start,
+                                children: [
+                                  Text(c.telp,
+                                      style:
+                                          const TextStyle(
+                                              fontSize:
+                                                  11,
+                                              color: AppColors
+                                                  .textGrey)),
+                                  Text(c.paket,
+                                      style:
+                                          const TextStyle(
+                                              fontSize:
+                                                  12,
+                                              fontWeight:
+                                                  FontWeight
+                                                      .w600,
+                                              color: AppColors
+                                                  .textDark)),
+                                  const SizedBox(
+                                      height: 6),
+                                  Container(
+                                    padding:
+                                        const EdgeInsets
+                                            .symmetric(
+                                                horizontal:
+                                                    12,
+                                                vertical:
+                                                    6),
+                                    decoration:
+                                        BoxDecoration(
+                                            color: aktif
+                                                ? AppColors
+                                                    .successBg
+                                                : AppColors
+                                                    .dangerBg,
+                                            borderRadius:
+                                                BorderRadius
+                                                    .circular(
+                                                        100)),
+                                    child: Text(
+                                        c.status,
+                                        style: TextStyle(
+                                            fontSize:
+                                                11,
+                                            fontWeight:
+                                                FontWeight
+                                                    .w700,
+                                            color: aktif
+                                                ? AppColors
+                                                    .success
+                                                : AppColors
+                                                    .danger)),
+                                  ),
+                                ],
                               ),
+                              trailing: const Icon(
+                                  Icons
+                                      .chevron_right_rounded,
+                                  color: AppColors
+                                      .textGrey),
                             ),
                           );
                         },
-                      ),
+                              ),
+                            ),
                     ),
                   ],
                 ),

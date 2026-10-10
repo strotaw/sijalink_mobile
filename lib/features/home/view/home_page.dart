@@ -39,7 +39,13 @@ class HomePage extends StatelessWidget {
                     CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 50),
-                  _profileHeader(context),
+                  Padding(
+                    padding:
+                        const EdgeInsets.symmetric(
+                            horizontal: 12),
+                    child:
+                        _profileHeader(context),
+                  ),
                   const SizedBox(height: 52),
                   // Panel kehadiran — terpisah dengan jarak.
                   Container(

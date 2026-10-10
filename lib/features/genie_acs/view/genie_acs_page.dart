@@ -57,7 +57,16 @@ class GenieAcsPage extends StatelessWidget {
             const SizedBox(height: 12),
             Container(
               decoration: const BoxDecoration(
-                color: Colors.white,
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.white,
+                    Colors.white,
+                    Color(0xFF2AA5CD),
+                  ],
+                  stops: [0.0, 0.6, 1.0],
+                ),
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(28),
                   topRight: Radius.circular(28),
