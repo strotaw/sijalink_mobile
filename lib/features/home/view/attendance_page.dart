@@ -19,6 +19,79 @@ class AttendancePage extends StatelessWidget {
         builder: (context, s) => ListView(
           padding: const EdgeInsets.all(16),
           children: [
+            // --- Absen hari ini (check-in / check-out di sini) ---
+            Container(
+              decoration: AppStyles.card,
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment:
+                    CrossAxisAlignment.start,
+                children: [
+                  const Row(
+                    children: [
+                      Icon(Icons.fingerprint,
+                          color: AppColors.primary),
+                      SizedBox(width: 8),
+                      Text('Absen Hari Ini',
+                          style: AppStyles.h3),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Expanded(
+                          child: _jamBox(
+                              'Masuk',
+                              s.jamMasuk ?? '--:--')),
+                      const SizedBox(width: 10),
+                      Expanded(
+                          child: _jamBox(
+                              'Keluar',
+                              s.jamKeluar ?? '--:--')),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton.icon(
+                          onPressed: s.sudahCheckIn
+                              ? null
+                              : () => context
+                                  .read<
+                                      AttendanceCubit>()
+                                  .checkIn(),
+                          icon: const Icon(Icons.login,
+                              size: 18),
+                          label: Text(s.sudahCheckIn
+                              ? 'Sudah Check-In'
+                              : 'Check-In'),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: (!s.sudahCheckIn ||
+                                  s.sudahCheckOut)
+                              ? null
+                              : () => context
+                                  .read<
+                                      AttendanceCubit>()
+                                  .checkOut(),
+                          icon: const Icon(
+                              Icons.logout,
+                              size: 18),
+                          label: Text(s.sudahCheckOut
+                              ? 'Sudah Pulang'
+                              : 'Check-Out'),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
             Container(
               decoration: AppStyles.card,
               padding: const EdgeInsets.all(16),
@@ -109,6 +182,24 @@ class AttendancePage extends StatelessWidget {
       ),
     );
   }
+
+  Widget _jamBox(String label, String jam) => Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: AppColors.infoBg,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Column(
+          children: [
+            Text(label, style: AppStyles.caption),
+            Text(jam,
+                style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.primary)),
+          ],
+        ),
+      );
 
   Widget _stat(String v, String l) => Column(
         children: [

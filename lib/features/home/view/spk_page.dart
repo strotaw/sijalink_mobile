@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../notification/bloc/notification_cubit.dart';
 import '../../spk/bloc/spk_cubit.dart';
 
 class SpkPage extends StatelessWidget {
@@ -77,10 +78,35 @@ class SpkPage extends StatelessWidget {
                           SpkStatus>(
                         icon: const Icon(
                             Icons.more_vert),
-                        onSelected: (st) => context
-                            .read<SpkCubit>()
-                            .updateStatus(
-                                spk.no, st),
+                        onSelected: (st) {
+                          context
+                              .read<SpkCubit>()
+                              .updateStatus(
+                                  spk.no, st);
+                          context
+                              .read<NotificationCubit>()
+                              .pushSpk(
+                                spk.no,
+                                spk.jenis,
+                                st == SpkStatus.selesai
+                                    ? NotifType
+                                        .spkSelesai
+                                    : NotifType
+                                        .spkProses,
+                              );
+                          ScaffoldMessenger.of(
+                                  context)
+                              .showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                  '${spk.no} → ${st.name}'),
+                              behavior:
+                                  SnackBarBehavior
+                                      .floating,
+                              shape: const StadiumBorder(),
+                            ),
+                          );
+                        },
                         itemBuilder: (_) => const [
                           PopupMenuItem(
                               value:

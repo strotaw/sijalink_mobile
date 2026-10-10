@@ -17,16 +17,69 @@ abstract class AppTheme {
       scaffoldBackgroundColor: AppColors.background,
       primaryColor: seed,
       appBarTheme: const AppBarTheme(
-        backgroundColor: AppColors.surface,
-        foregroundColor: AppColors.textDark,
+        backgroundColor: AppColors.primary,
+        foregroundColor: Colors.white,
         elevation: 0,
+        centerTitle: false,
+        titleTextStyle: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+            color: Colors.white),
       ),
       cardTheme: CardThemeData(
         color: AppColors.surface,
         elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(24),
           side: const BorderSide(color: AppColors.border),
+        ),
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.primary,
+          foregroundColor: Colors.white,
+          minimumSize: const Size.fromHeight(48),
+          shape: const StadiumBorder(),
+          textStyle:
+              const TextStyle(fontWeight: FontWeight.w700),
+        ),
+      ),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          foregroundColor: AppColors.primary,
+          minimumSize: const Size.fromHeight(48),
+          side: const BorderSide(
+              color: AppColors.primary, width: 1.5),
+          shape: const StadiumBorder(),
+          textStyle:
+              const TextStyle(fontWeight: FontWeight.w700),
+        ),
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: Colors.white,
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(24),
+          borderSide: const BorderSide(color: AppColors.border),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(24),
+          borderSide: const BorderSide(color: AppColors.border),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(24),
+          borderSide:
+              const BorderSide(color: AppColors.primary, width: 1.5),
+        ),
+      ),
+      navigationBarTheme: NavigationBarThemeData(
+        backgroundColor: Colors.white,
+        indicatorColor: AppColors.primary,
+        labelTextStyle: WidgetStatePropertyAll(
+          const TextStyle(
+              fontSize: 12, fontWeight: FontWeight.w600),
         ),
       ),
       navigationRailTheme: const NavigationRailThemeData(
@@ -49,19 +102,24 @@ abstract class AppStyles {
   static const body = TextStyle(fontSize: 14, color: AppColors.textGrey);
   static const caption = TextStyle(fontSize: 12, color: AppColors.textGrey);
 
-  // Utilities ala CSS class
+  // Utilities ala CSS class — extra round + solid
   static BoxDecoration card = BoxDecoration(
     color: Colors.white,
-    borderRadius: BorderRadius.circular(16),
+    borderRadius: BorderRadius.circular(24),
     border: Border.all(color: AppColors.border),
     boxShadow: [
       BoxShadow(
-        color: Colors.black.withValues(alpha: 0.04),
-        blurRadius: 12,
-        offset: const Offset(0, 4),
+        color: const Color(0xFF0C70A4).withValues(alpha: 0.08),
+        blurRadius: 16,
+        offset: const Offset(0, 6),
       ),
     ],
   );
+
+  static BoxDecoration pill(Color bg) => BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(100),
+      );
 
   static const EdgeInsets pagePadding = EdgeInsets.all(24);
 }

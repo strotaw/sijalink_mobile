@@ -3,328 +3,650 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../attendance/bloc/attendance_cubit.dart';
-import '../../mikrotik/bloc/mikrotik_cubit.dart';
-import '../../spk/bloc/spk_cubit.dart';
+import '../../notification/bloc/notification_cubit.dart';
+import '../../notification/view/notification_page.dart';
+import '../../ticket/bloc/ticket_cubit.dart';
 import 'attendance_page.dart';
 import 'mikrotik_page.dart';
 import 'spk_page.dart';
+import '../../ticket/view/ticket_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _greetingCard(context),
-          const SizedBox(height: 16),
-          _kehadiranCard(context),
-          const SizedBox(height: 16),
-          const Text('Menu Teknisi', style: AppStyles.h3),
-          const SizedBox(height: 10),
-          _menuGrid(context),
-          const SizedBox(height: 16),
-          _spkAktif(context),
-          const SizedBox(height: 16),
-          _mikrotikCard(context),
-        ],
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [AppColors.primary, AppColors.primaryDark],
+        ),
+      ),
+      child: LayoutBuilder(
+        builder: (context, constraints) =>
+            SingleChildScrollView(
+          padding:
+              const EdgeInsets.symmetric(vertical: 16),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight: constraints.maxHeight - 32,
+            ),
+            child: IntrinsicHeight(
+              child: Column(
+                crossAxisAlignment:
+                    CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding:
+                        const EdgeInsets.symmetric(
+                            horizontal: 16),
+                    child:
+                        _profileHeader(context),
+                  ),
+                  const SizedBox(height: 52),
+                  // Panel kehadiran — terpisah dengan jarak.
+                  Padding(
+                    padding:
+                        const EdgeInsets.symmetric(
+                            horizontal: 16),
+                    child: Container(
+                      width: double.infinity,
+                      margin:
+                          const EdgeInsets.symmetric(
+                              horizontal: 40),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius:
+                            BorderRadius.circular(
+                                28),
+                      ),
+                      padding:
+                          const EdgeInsets.all(16),
+                      child:
+                          _kehadiranRow(context),
+                    ),
+                  ),
+                  // Panel menu pas mengisi sisa layar —
+                  // tidak bisa di-scroll.
+                  const SizedBox(height: 60),
+                  Expanded(
+                    child: Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.white,
+                          Colors.white,
+                          Color(0xFF2AA5CD),
+                        ],
+                        stops: [0.0, 0.6, 1.0],
+                      ),
+                      borderRadius:
+                          const BorderRadius.only(
+                        topLeft: Radius.circular(28),
+                        topRight: Radius.circular(28),
+                        bottomLeft:
+                            Radius.circular(50),
+                        bottomRight:
+                            Radius.circular(50),
+                      ),
+                    ),
+                    padding:
+                        const EdgeInsets.all(16),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment:
+                            CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 12),
+                          const Center(
+                            child: Text('Menu Teknisi',
+                                style: AppStyles.h3),
+                          ),
+                          const SizedBox(height: 28),
+                          const _MenuCarousel(),
+                          const Divider(
+                              height: 48,
+                              thickness: 1),
+                          _tiketAktif(context),
+                        ],
+                      ),
+                    ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
 
-  Widget _greetingCard(BuildContext context) => Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-              colors: [AppColors.primary, AppColors.primaryDark]),
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: const Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Halo, Teknisi 👋',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w700)),
-            SizedBox(height: 4),
-            Text('Siap bertugas hari ini? 3 SPK menunggu.',
-                style: TextStyle(color: Colors.white70, fontSize: 13)),
-          ],
-        ),
-      );
-
-  Widget _kehadiranCard(BuildContext context) =>
-      BlocBuilder<AttendanceCubit, AttendanceState>(
-        builder: (context, s) => Container(
-          decoration: AppStyles.card,
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Row(
-                children: [
-                  Icon(Icons.fingerprint,
-                      color: AppColors.primary),
-                  SizedBox(width: 8),
-                  Text('Kehadiran Hari Ini',
-                      style: AppStyles.h3),
-                ],
-              ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                      child: _jamBox('Masuk', s.jamMasuk ?? '--:--')),
-                  const SizedBox(width: 10),
-                  Expanded(
-                      child: _jamBox('Keluar', s.jamKeluar ?? '--:--')),
-                ],
-              ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primary,
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                              borderRadius:
-                                  BorderRadius.circular(12))),
-                      onPressed: s.sudahCheckIn
-                          ? null
-                          : () => context
-                              .read<AttendanceCubit>()
-                              .checkIn(),
-                      icon: const Icon(Icons.login, size: 18),
-                      label: Text(s.sudahCheckIn
-                          ? 'Sudah Check-In'
-                          : 'Check-In'),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      style: OutlinedButton.styleFrom(
-                          foregroundColor: AppColors.primary,
-                          side: const BorderSide(
-                              color: AppColors.primary),
-                          shape: RoundedRectangleBorder(
-                              borderRadius:
-                                  BorderRadius.circular(12))),
-                      onPressed: (!s.sudahCheckIn ||
-                              s.sudahCheckOut)
-                          ? null
-                          : () => context
-                              .read<AttendanceCubit>()
-                              .checkOut(),
-                      icon: const Icon(Icons.logout, size: 18),
-                      label: Text(s.sudahCheckOut
-                          ? 'Sudah Pulang'
-                          : 'Check-Out'),
-                    ),
-                  ),
-                ],
-              ),
-            ],
+  /// Foto profil kiri atas + sapaan kecil + lonceng notifikasi sebaris.
+  Widget _profileHeader(BuildContext context) => Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(2),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(
+                  color: Colors.white, width: 2),
+            ),
+            child: const CircleAvatar(
+              radius: 24,
+              backgroundColor: Colors.white,
+              child: Text('TD',
+                  style: TextStyle(
+                      color: AppColors.primary,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700)),
+            ),
           ),
-        ),
-      );
-
-  Widget _jamBox(String label, String jam) => Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: AppColors.primaryLight,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Column(
-          children: [
-            Text(label, style: AppStyles.caption),
-            Text(jam,
-                style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.primary)),
-          ],
-        ),
-      );
-
-  Widget _menuGrid(BuildContext context) {
-    final menus = [
-      (Icons.fingerprint, 'Kehadiran', const AttendancePage()),
-      (Icons.assessment_rounded, 'Laporan\nKehadiran', const AttendancePage(showReport: true)),
-      (Icons.assignment_rounded, 'SPK', const SpkPage()),
-      (Icons.router_rounded, 'Mikrotik', const MikrotikPage()),
-    ];
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      gridDelegate:
-          const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 4,
-              crossAxisSpacing: 10,
-              mainAxisSpacing: 10,
-              mainAxisExtent: 96),
-      itemCount: menus.length,
-      itemBuilder: (_, i) {
-        final (icon, label, page) = menus[i];
-        return InkWell(
-          borderRadius: BorderRadius.circular(14),
-          onTap: () => Navigator.push(
-              context, MaterialPageRoute(builder: (_) => page)),
-          child: Container(
-            decoration: AppStyles.card,
+          const SizedBox(width: 10),
+          const Expanded(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment:
+                  CrossAxisAlignment.start,
               children: [
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: AppColors.primary
-                        .withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(icon,
-                      color: AppColors.primary, size: 22),
-                ),
-                const SizedBox(height: 6),
-                Text(label,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(fontSize: 11)),
+                Text('Halo 👋',
+                    style: TextStyle(
+                        color: Colors.white70,
+                        fontSize: 12)),
+                Text('Teknisi Dika',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700)),
               ],
             ),
           ),
-        );
-      },
-    );
+          InkWell(
+            borderRadius: BorderRadius.circular(16),
+            onTap: () =>
+                showNotificationPopup(context),
+            child: Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color:
+                    Colors.white.withValues(alpha: 0.2),
+                borderRadius:
+                    BorderRadius.circular(16),
+              ),
+              child: BlocBuilder<NotificationCubit,
+                  NotificationState>(
+                builder: (context, n) => Badge(
+                  isLabelVisible:
+                      n.unreadCount > 0,
+                  label:
+                      Text('${n.unreadCount}'),
+                  backgroundColor: AppColors.danger,
+                  child: const Icon(
+                      Icons.notifications_outlined,
+                      color: Colors.white),
+                ),
+              ),
+            ),
+          ),
+        ],
+      );
+
+  /// "Jumat, 10 Oktober 2026" dalam Bahasa Indonesia.
+  String _hariTanggal() {
+    const hari = [
+      'Senin',
+      'Selasa',
+      'Rabu',
+      'Kamis',
+      'Jumat',
+      'Sabtu',
+      'Minggu'
+    ];
+    const bulan = [
+      'Januari',
+      'Februari',
+      'Maret',
+      'April',
+      'Mei',
+      'Juni',
+      'Juli',
+      'Agustus',
+      'September',
+      'Oktober',
+      'November',
+      'Desember'
+    ];
+    final now = DateTime.now();
+    return '${hari[now.weekday - 1]}, ${now.day} '
+        '${bulan[now.month - 1]} ${now.year}';
   }
 
-  Widget _spkAktif(BuildContext context) =>
-      BlocBuilder<SpkCubit, SpkState>(
-        builder: (context, s) {
-          final aktif =
-              s.list.where((e) => e.status != SpkStatus.selesai).toList();
-          return Container(
-            decoration: AppStyles.card,
-            padding: const EdgeInsets.all(16),
+  /// Ringkasan saja — absen dilakukan di halaman Kehadiran.
+  /// Atas: hari + tanggal. Bawah: ikon ✓/✗ + "Check-In"
+  /// + jam presensi / "Belum presensi".
+  Widget _kehadiranRow(BuildContext context) =>
+      BlocBuilder<AttendanceCubit, AttendanceState>(
+        builder: (context, s) => InkWell(
+          borderRadius: BorderRadius.circular(20),
+          onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (_) =>
+                      const AttendancePage())),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+                vertical: 4),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment:
+                  CrossAxisAlignment.start,
               children: [
+                Text(_hariTanggal(),
+                    style: AppStyles.h3),
+                const SizedBox(height: 10),
                 Row(
                   children: [
-                    const Text('SPK Aktif', style: AppStyles.h3),
-                    const Spacer(),
-                    TextButton(
-                        onPressed: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (_) => const SpkPage())),
-                        child: const Text('Lihat Semua')),
+                    Container(
+                      padding:
+                          const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: s.sudahCheckIn
+                            ? AppColors.successBg
+                            : AppColors.dangerBg,
+                        borderRadius:
+                            BorderRadius.circular(
+                                20),
+                      ),
+                      child: Icon(
+                        s.sudahCheckIn
+                            ? Icons.check_rounded
+                            : Icons.close_rounded,
+                        color: s.sudahCheckIn
+                            ? AppColors.success
+                            : AppColors.danger,
+                        size: 28,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment:
+                            CrossAxisAlignment
+                                .start,
+                        children: [
+                          const Text('Check-In',
+                              style: TextStyle(
+                                  fontWeight:
+                                      FontWeight
+                                          .w600,
+                                  fontSize: 14,
+                                  color: AppColors
+                                      .textDark)),
+                          const SizedBox(height: 2),
+                          Text(
+                            s.sudahCheckIn
+                                ? (s.jamMasuk ??
+                                    '--:--')
+                                : 'Belum presensi',
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight:
+                                  FontWeight.w700,
+                              color: s.sudahCheckIn
+                                  ? AppColors
+                                      .primary
+                                  : AppColors
+                                      .textGrey,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Icon(
+                        Icons.chevron_right_rounded,
+                        color: AppColors.textGrey),
                   ],
                 ),
-                for (final spk in aktif.take(3))
-                  ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    leading: Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                          color: AppColors.primaryLight,
-                          borderRadius:
-                              BorderRadius.circular(10)),
-                      child: const Icon(Icons.assignment,
-                          color: AppColors.primary, size: 20),
-                    ),
-                    title: Text('${spk.no} • ${spk.jenis}',
-                        style: const TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 13)),
-                    subtitle: Text(spk.customer,
-                        style: AppStyles.caption),
-                    trailing: _spkBadge(spk.status),
-                  ),
               ],
+            ),
+          ),
+        ),
+      );
+
+  /// Bubble tiket sendiri di dalam panel teknisi —
+  /// hanya 1 tiket terbaru + tombol ke halaman Ticketing.
+  Widget _tiketAktif(BuildContext context) =>
+      BlocBuilder<TicketCubit, TicketState>(
+        builder: (context, s) {
+          final aktif = s.aktif;
+          return Padding(
+            padding: const EdgeInsets.symmetric(
+                horizontal: 40),
+            // Satu bubble gabung: kepala biru + badan putih.
+            child: ClipRRect(
+              borderRadius:
+                  BorderRadius.circular(24),
+              child: Column(
+                crossAxisAlignment:
+                    CrossAxisAlignment.stretch,
+                children: [
+                  Container(
+                    color:
+                        const Color(0xFF0C70A4),
+                    padding:
+                        const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 4),
+                    child: Row(
+                      children: [
+                        const Text('Tiket Aktif',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight:
+                                    FontWeight
+                                        .w700)),
+                        const Spacer(),
+                        TextButton(
+                            onPressed: () =>
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (_) =>
+                                            const TicketPage())),
+                            style: TextButton
+                                .styleFrom(
+                              foregroundColor:
+                                  Colors.white,
+                            ),
+                            child: const Text(
+                                'Lihat Semua')),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    color: Colors.white,
+                    padding:
+                        const EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment:
+                      CrossAxisAlignment.start,
+                  children: [
+                if (aktif.isEmpty)
+                  const Text(
+                      'Tidak ada tiket aktif',
+                      style: AppStyles.caption)
+                else
+                  Builder(builder: (_) {
+                    final t = aktif.first;
+                    return ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      leading: Container(
+                        padding:
+                            const EdgeInsets.all(
+                                10),
+                        decoration: BoxDecoration(
+                            color: AppColors.infoBg,
+                            borderRadius:
+                                BorderRadius.circular(
+                                    16)),
+                        child: const Icon(
+                            Icons
+                                .confirmation_number_outlined,
+                            color: AppColors.primary,
+                            size: 20),
+                      ),
+                      title: Text(
+                          '${t.no} • ${t.judul}',
+                          style: const TextStyle(
+                              fontWeight:
+                                  FontWeight.w600,
+                              fontSize: 13)),
+                      subtitle: Text(t.customer,
+                          style: AppStyles.caption),
+                      trailing:
+                          _tiketBadge(t.status),
+                    );
+                  }),
+                  ],
+                ),
+                  ),
+                ],
+              ),
             ),
           );
         },
       );
 
-  Widget _spkBadge(SpkStatus s) {
-    final (txt, c) = switch (s) {
-      SpkStatus.baru => ('Baru', AppColors.info),
-      SpkStatus.proses => ('Proses', AppColors.warning),
-      SpkStatus.selesai => ('Selesai', AppColors.success),
+  Widget _tiketBadge(TicketStatus s) {
+    final (txt, c, bg) = switch (s) {
+      TicketStatus.baru => ('Baru', AppColors.info, AppColors.infoBg),
+      TicketStatus.proses =>
+        ('Proses', AppColors.warning, AppColors.warningBg),
+      TicketStatus.selesai =>
+        ('Selesai', AppColors.success, AppColors.successBg),
     };
     return Container(
-      padding:
-          const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      padding: const EdgeInsets.symmetric(
+          horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-          color: c.withValues(alpha: 0.12),
-          borderRadius: BorderRadius.circular(20)),
+          color: bg,
+          borderRadius: BorderRadius.circular(100)),
       child: Text(txt,
-          style: TextStyle(color: c, fontSize: 11)),
+          style: TextStyle(
+              color: c,
+              fontSize: 11,
+              fontWeight: FontWeight.w700)),
+    );
+  }
+}
+
+/// Carousel 5 tombol: muat 4 di layar, bisa digeser.
+/// Panah kiri hilang saat mentok kiri, panah kanan hilang
+/// saat mentok kanan.
+class _MenuCarousel extends StatefulWidget {
+  const _MenuCarousel();
+
+  @override
+  State<_MenuCarousel> createState() => _MenuCarouselState();
+}
+
+class _MenuCarouselState extends State<_MenuCarousel> {
+  final _scroll = ScrollController();
+  bool _atStart = true;
+  bool _atEnd = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _scroll.addListener(_onScroll);
+    WidgetsBinding.instance
+        .addPostFrameCallback((_) => _onScroll());
+  }
+
+  @override
+  void dispose() {
+    _scroll.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (!_scroll.hasClients) return;
+    final max = _scroll.position.maxScrollExtent;
+    setState(() {
+      _atStart = _scroll.offset <= 8;
+      _atEnd =
+          max <= 0 || _scroll.offset >= max - 8;
+    });
+  }
+
+  // Langkah snap = 1 ikon (diisi dinamis di build
+  // agar 4 ikon pas selebar list).
+  double _step = 60.0 + 8.0;
+
+  void _geser(int arah) {
+    if (!_scroll.hasClients) return;
+    final max = _scroll.position.maxScrollExtent;
+    final index =
+        (_scroll.offset / _step).round() + arah;
+    final target =
+        (index * _step).clamp(0.0, max);
+    _scroll.animateTo(target,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Panah punya slot tetap 34px di tiap tepi (kosong
+    // saat mentok) sehingga tidak menutupi ikon dan
+    // lebar list stabil.
+    return SizedBox(
+      height: 96,
+      child: Row(
+        children: [
+          SizedBox(
+            width: 34,
+            child: _atStart
+                ? null
+                : _panah(
+                    Icons.chevron_left_rounded,
+                    () => _geser(-1)),
+          ),
+          Expanded(
+            child: Builder(
+              builder: (context) {
+                // 4 ikon pas selebar list: jarak dihitung
+                // dinamis dari lebar layar.
+                final lebarList =
+                    MediaQuery.of(context)
+                        .size
+                        .width -
+                        32 -
+                        68;
+                final s =
+                    ((lebarList - 60.0 * 4) / 3)
+                        .clamp(4.0, 40.0);
+                _step = 60.0 + s;
+                final lebar4 =
+                    60.0 * 4 + s * 3;
+                final pad =
+                    ((lebarList - lebar4) / 2)
+                        .clamp(0.0, 80.0);
+                return ListView(
+                  controller: _scroll,
+                  scrollDirection:
+                      Axis.horizontal,
+                  padding: EdgeInsets.symmetric(
+                      horizontal: pad),
+                  children: [
+                    _item(
+                        context,
+                        Icons.fingerprint,
+                        'Kehadiran',
+                        const AttendancePage(),
+                        s),
+                    _item(
+                        context,
+                        Icons.assessment_rounded,
+                        'Laporan\nKehadiran',
+                        const AttendancePage(
+                            showReport: true),
+                        s),
+                    _item(
+                        context,
+                        Icons.assignment_rounded,
+                        'SPK',
+                        const SpkPage(),
+                        s),
+                    _item(
+                        context,
+                        Icons
+                            .confirmation_number_outlined,
+                        'Tiket',
+                        const TicketPage(),
+                        s),
+                    _item(
+                        context,
+                        Icons.router_rounded,
+                        'Mikrotik',
+                        const MikrotikPage(),
+                        s),
+                  ],
+                );
+              },
+            ),
+          ),
+          SizedBox(
+            width: 34,
+            child: _atEnd
+                ? null
+                : _panah(
+                    Icons.chevron_right_rounded,
+                    () => _geser(1)),
+          ),
+        ],
+      ),
     );
   }
 
-  Widget _mikrotikCard(BuildContext context) =>
-      BlocBuilder<MikrotikCubit, MikrotikState>(
-        builder: (context, s) => Container(
-          decoration: AppStyles.card,
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  const Text('Mikrotik di Manage',
-                      style: AppStyles.h3),
-                  const Spacer(),
-                  TextButton(
-                      onPressed: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (_) =>
-                                  const MikrotikPage())),
-                      child: const Text('Detail')),
-                ],
-              ),
-              for (final m in s.list)
-                ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  leading: Icon(Icons.router,
-                      color: m.online
-                          ? AppColors.success
-                          : AppColors.danger),
-                  title: Text(m.nama,
-                      style: const TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 13)),
-                  subtitle: Text('${m.ip} • ${m.clientCount} klien',
-                      style: AppStyles.caption),
-                  trailing: Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 4),
-                    decoration: BoxDecoration(
-                        color: (m.online
-                                ? AppColors.success
-                                : AppColors.danger)
-                            .withValues(alpha: 0.12),
-                        borderRadius:
-                            BorderRadius.circular(20)),
-                    child: Text(m.online ? 'Online' : 'Offline',
-                        style: TextStyle(
-                            fontSize: 11,
-                            color: m.online
-                                ? AppColors.success
-                                : AppColors.danger)),
-                  ),
-                ),
-            ],
+  Widget _panah(IconData icon, VoidCallback onTap) {
+    return Padding(
+      padding:
+          const EdgeInsets.symmetric(horizontal: 2),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(100),
+        onTap: onTap,
+        child: Container(
+          width: 30,
+          height: 30,
+          decoration: const BoxDecoration(
+            color: AppColors.primary,
+            shape: BoxShape.circle,
+          ),
+          child: Icon(icon,
+              color: Colors.white, size: 20),
+        ),
+      ),
+    );
+  }
+
+  Widget _item(BuildContext context, IconData icon,
+      String label, Widget page, double jarak) {
+    return Padding(
+      padding: EdgeInsets.only(right: jarak),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(20),
+        onTap: () => Navigator.push(context,
+            MaterialPageRoute(builder: (_) => page)),
+        child: SizedBox(
+          width: 60,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+                horizontal: 8, vertical: 6),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(icon,
+                    color: AppColors.primary,
+                    size: 44),
+                const SizedBox(height: 6),
+                Text(label,
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textDark)),
+              ],
+            ),
           ),
         ),
-      );
+      ),
+    );
+  }
 }

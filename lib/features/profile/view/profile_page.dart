@@ -63,10 +63,8 @@ class ProfilePage extends StatelessWidget {
               backgroundColor: AppColors.danger,
               foregroundColor: Colors.white,
               minimumSize:
-                  const Size.fromHeight(48),
-              shape: RoundedRectangleBorder(
-                  borderRadius:
-                      BorderRadius.circular(12))),
+                  const Size.fromHeight(52),
+              shape: const StadiumBorder()),
           onPressed: () {},
           icon: const Icon(Icons.logout),
           label: const Text('Keluar'),
