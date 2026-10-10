@@ -38,20 +38,11 @@ class HomePage extends StatelessWidget {
                 crossAxisAlignment:
                     CrossAxisAlignment.start,
                 children: [
-                  Padding(
-                    padding:
-                        const EdgeInsets.symmetric(
-                            horizontal: 16),
-                    child:
-                        _profileHeader(context),
-                  ),
+                  const SizedBox(height: 50),
+                  _profileHeader(context),
                   const SizedBox(height: 52),
                   // Panel kehadiran — terpisah dengan jarak.
-                  Padding(
-                    padding:
-                        const EdgeInsets.symmetric(
-                            horizontal: 16),
-                    child: Container(
+                  Container(
                       width: double.infinity,
                       margin:
                           const EdgeInsets.symmetric(
@@ -67,7 +58,6 @@ class HomePage extends StatelessWidget {
                       child:
                           _kehadiranRow(context),
                     ),
-                  ),
                   // Panel menu pas mengisi sisa layar —
                   // tidak bisa di-scroll.
                   const SizedBox(height: 60),

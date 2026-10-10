@@ -5,8 +5,6 @@ import '../../customer/view/customer_page.dart';
 import '../../genie_acs/view/genie_acs_page.dart';
 import '../../home/view/home_page.dart';
 import '../../profile/view/profile_page.dart';
-import '../../notification/bloc/notification_cubit.dart';
-import '../../notification/view/notification_page.dart';
 import '../bloc/dashboard_bloc.dart';
 import '../bloc/dashboard_event.dart';
 import '../bloc/dashboard_state.dart';
@@ -19,72 +17,10 @@ class DashboardPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<DashboardBloc, DashboardState>(
       builder: (context, state) {
-        final titles = {
-          TeknisiMenu.customer: 'Customer',
-          TeknisiMenu.genieAcs: 'GenieACS',
-          TeknisiMenu.profil: 'Profil',
-        };
-        final isBeranda =
-            state.activeMenu == TeknisiMenu.beranda;
         return Scaffold(
-          // Beranda: tanpa AppBar + background biru sampai bawah —
-          // header profil + lonceng sudah ada di dalam HomePage.
-          backgroundColor: isBeranda
-              ? AppColors.primaryDark
-              : null,
-          appBar: isBeranda
-              ? null
-              : AppBar(
-                  title:
-                      Text(titles[state.activeMenu]!),
-                  shape:
-                      const RoundedRectangleBorder(
-                    borderRadius:
-                        BorderRadius.vertical(
-                      bottom: Radius.circular(24),
-                    ),
-                  ),
-                  actions: [
-                    Padding(
-                      padding: const EdgeInsets.only(
-                          right: 16),
-                      child: InkWell(
-                        borderRadius:
-                            BorderRadius.circular(
-                                16),
-                        onTap: () =>
-                            showNotificationPopup(
-                                context),
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.white
-                          .withValues(alpha: 0.2),
-                      borderRadius:
-                          BorderRadius.circular(16),
-                    ),
-                    child: BlocBuilder<
-                        NotificationCubit,
-                        NotificationState>(
-                      builder: (context, n) =>
-                          Badge(
-                        isLabelVisible:
-                            n.unreadCount > 0,
-                        label: Text(
-                            '${n.unreadCount}'),
-                        backgroundColor:
-                            AppColors.danger,
-                        child: const Icon(
-                            Icons
-                                .notifications_outlined,
-                            color: Colors.white),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
+          // Semua tab tanpa AppBar — header (nama halaman
+          // + lonceng) ada di dalam tiap halaman.
+          backgroundColor: AppColors.primaryDark,
           body: IndexedStack(
             index: state.activeMenu.index,
             children: const [
@@ -95,12 +31,7 @@ class DashboardPage extends StatelessWidget {
             ],
           ),
           bottomNavigationBar: Container(
-            decoration: const BoxDecoration(
-              color: AppColors.primaryDark,
-              borderRadius: BorderRadius.vertical(
-                top: Radius.circular(28),
-              ),
-            ),
+            color: AppColors.primaryDark,
             child: SafeArea(
               top: false,
               child: Padding(

@@ -35,8 +35,9 @@ class Customer extends Equatable {
 
 class CustomerState extends Equatable {
   final String query;
+  final String filter;
   final List<Customer> all;
-  const CustomerState({this.query = '', this.all = const [
+  const CustomerState({this.query = '', this.filter = 'Semua', this.all = const [
     Customer('Budi Santoso', 'C-001', '50 Mbps', 'Aktif',
         alamat: 'Jl. Merpati No. 12, Timur',
         telp: '0812-3456-0001',
@@ -79,17 +80,26 @@ class CustomerState extends Equatable {
         mikrotik: 'MT-Pusat'),
   ]});
 
-  List<Customer> get filtered => query.isEmpty
-      ? all
-      : all.where((c) =>
-          c.nama.toLowerCase().contains(query.toLowerCase()) ||
-          c.id.toLowerCase().contains(query.toLowerCase())).toList();
+  List<Customer> get filtered {
+    final byStatus = filter == 'Semua'
+        ? all
+        : filter == 'Tidak Aktif'
+            ? all.where((c) => c.status != 'Aktif').toList()
+            : all.where((c) => c.status == filter).toList();
+    if (query.isEmpty) return byStatus;
+    return byStatus.where((c) =>
+        c.nama.toLowerCase().contains(query.toLowerCase()) ||
+        c.id.toLowerCase().contains(query.toLowerCase())).toList();
+  }
 
   @override
-  List<Object> get props => [query, all];
+  List<Object> get props => [query, filter, all];
 }
 
 class CustomerCubit extends Cubit<CustomerState> {
   CustomerCubit() : super(const CustomerState());
-  void search(String q) => emit(CustomerState(query: q, all: state.all));
+  void search(String q) =>
+      emit(CustomerState(query: q, filter: state.filter, all: state.all));
+  void setFilter(String f) =>
+      emit(CustomerState(query: state.query, filter: f, all: state.all));
 }
