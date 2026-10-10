@@ -1,0 +1,52 @@
+import '../bloc/customer_cubit.dart';
+
+/// Kontrak data customer (termasuk hardware/PPPoE/ODP/Mikrotik).
+abstract class CustomerRepository {
+  Future<List<Customer>> fetchCustomer();
+}
+
+class DummyCustomerRepository implements CustomerRepository {
+  @override
+  Future<List<Customer>> fetchCustomer() async => const [
+        Customer('Budi Santoso', 'C-001', '50 Mbps', 'Aktif',
+            alamat: 'Jl. Merpati No. 12, Timur',
+            telp: '0812-3456-0001',
+            tglPemasangan: '12 Jan 2024',
+            pppoeUser: 'budi.santoso@pppoe',
+            pppoePass: 'bd5482xQ',
+            odp: 'ODP-TMR-01 / Port 4',
+            mikrotik: 'MT-Cabang Timur'),
+        Customer('Siti Aminah', 'C-002', '20 Mbps', 'Aktif',
+            alamat: 'Jl. Kenanga No. 8, Timur',
+            telp: '0812-3456-0002',
+            tglPemasangan: '03 Mar 2024',
+            pppoeUser: 'siti.aminah@pppoe',
+            pppoePass: 'st7731mN',
+            odp: 'ODP-KNG-02 / Port 1',
+            mikrotik: 'MT-Cabang Timur'),
+        Customer('Andi Pratama', 'C-003', '100 Mbps', 'Isolir',
+            alamat: 'Jl. Mawar No. 3, Barat',
+            telp: '0812-3456-0003',
+            tglPemasangan: '21 Jun 2023',
+            pppoeUser: 'andi.pratama@pppoe',
+            pppoePass: 'an9920kL',
+            odp: 'ODP-MWR-01 / Port 7',
+            mikrotik: 'MT-Cabang Barat'),
+        Customer('Dewi Lestari', 'C-004', '30 Mbps', 'Aktif',
+            alamat: 'Jl. Anggrek No. 21, Pusat',
+            telp: '0812-3456-0004',
+            tglPemasangan: '15 Sep 2024',
+            pppoeUser: 'dewi.lestari@pppoe',
+            pppoePass: 'dw3345pZ',
+            odp: 'ODP-AGG-03 / Port 2',
+            mikrotik: 'MT-Pusat'),
+        Customer('Joko Susilo', 'C-005', '50 Mbps', 'Aktif',
+            alamat: 'Jl. Melati No. 5, Pusat',
+            telp: '0812-3456-0005',
+            tglPemasangan: '28 Nov 2024',
+            pppoeUser: 'joko.susilo@pppoe',
+            pppoePass: 'jk1108vB',
+            odp: 'ODP-MLT-01 / Port 5',
+            mikrotik: 'MT-Pusat'),
+      ];
+}
