@@ -5,6 +5,7 @@ import '../../../core/theme/app_theme.dart';
 import '../../../core/theme/responsive.dart';
 import '../../../core/widgets/page_header.dart';
 import '../../../core/widgets/profile_avatar.dart';
+import '../../../auth/bloc/auth_cubit.dart';
 import '../bloc/profile_cubit.dart';
 import 'edit_profile_page.dart';
 
@@ -112,7 +113,9 @@ class ProfilePage extends StatelessWidget {
                                                 0, 52),
                                         shape:
                                             const StadiumBorder()),
-                                onPressed: () {},
+                                onPressed: () => context
+                                    .read<AuthCubit>()
+                                    .logout(),
                                 icon: const Icon(
                                     Icons.logout),
                                 label: const Text(

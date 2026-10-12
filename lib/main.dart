@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'core/theme/app_theme.dart';
 import 'teknisi/attendance/bloc/attendance_cubit.dart';
+import 'auth/bloc/auth_cubit.dart';
+import 'auth/view/auth_gate.dart';
 import 'teknisi/customer/bloc/customer_cubit.dart';
 import 'teknisi/dashboard/bloc/dashboard_bloc.dart';
-import 'teknisi/dashboard/view/dashboard_page.dart';
 import 'teknisi/genie_acs/bloc/genie_acs_cubit.dart';
 import 'teknisi/mikrotik/bloc/mikrotik_cubit.dart';
 import 'teknisi/notification/bloc/notification_cubit.dart';
@@ -23,6 +24,7 @@ class SijaLinkApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
+        BlocProvider(create: (_) => AuthCubit()),
         BlocProvider(create: (_) => DashboardBloc()),
         BlocProvider(create: (_) => AttendanceCubit()),
         BlocProvider(create: (_) => SpkCubit()),
@@ -37,7 +39,7 @@ class SijaLinkApp extends StatelessWidget {
         title: 'SijaLink Teknisi',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.light(),
-        home: const DashboardPage(),
+        home: const AuthGate(),
       ),
     );
   }
