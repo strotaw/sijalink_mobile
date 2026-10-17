@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../core/theme/app_colors.dart';
-import '../../core/theme/app_theme.dart';
 import '../bloc/auth_cubit.dart';
 
 /// Halaman login teknisi: email + password saja.
@@ -51,20 +50,37 @@ class _LoginPageState extends State<LoginPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Area atas 30%: judul nempel bawah.
-              const Expanded(
+              // Area atas 30%: judul naik 60px.
+              Expanded(
                 flex: 3,
                 child: Align(
-                  alignment: Alignment.bottomCenter,
+                  alignment: Alignment.center,
                   child: Padding(
-                    padding: EdgeInsets.fromLTRB(24, 0, 24, 24),
-                    child: Text(
-                      'Selamat Datang!',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 26,
-                        fontWeight: FontWeight.w800,
-                        color: Colors.white,
+                    padding: const EdgeInsets.fromLTRB(24, 0, 24, 0),
+                    child: Transform.translate(
+                      offset: const Offset(0, -60),
+                      child: const Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            'Selamat Datang!',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 45,
+                              fontWeight: FontWeight.w800,
+                              color: Colors.white,
+                            ),
+                          ),
+                          SizedBox(height: 8),
+                          Text(
+                            'Masuk untuk mengakses akun dan layanan Anda',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Colors.white70,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
@@ -106,46 +122,49 @@ class _LoginPageState extends State<LoginPage> {
                               alignment: Alignment.centerRight,
                               child: Text(
                                 'Welcome Back',
-                                style: AppStyles.h2,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            const Align(
-                              alignment: Alignment.centerRight,
-                              child: Text(
-                                'Pakai email dan password akun teknisi.',
-                                textAlign: TextAlign.right,
-                                style: AppStyles.body,
+                                style: TextStyle(
+                                  fontSize: 35,
+                                  fontWeight: FontWeight.w800,
+                                  color: Color(0xFF0B4C7C),
+                                ),
                               ),
                             ),
                             const SizedBox(height: 20),
-                            const Text('Email',
-                                style: AppStyles.h3),
-                            const SizedBox(height: 6),
                             TextField(
                               controller: _email,
                               keyboardType:
                                   TextInputType.emailAddress,
                               enabled: !sibuk,
                               decoration: const InputDecoration(
-                                hintText: 'teknisi@sijalink.id',
-                                prefixIcon:
-                                    Icon(Icons.email_outlined),
+                                hintText: 'Email',
+                                hintStyle: TextStyle(
+                                    color: Color(0xFF0C6FA4)),
+                                prefixIcon: Icon(
+                                    Icons.email_outlined,
+                                    color: Color(0xFF0C6FA4)),
+                                contentPadding:
+                                    EdgeInsets.symmetric(
+                                        horizontal: 14,
+                                        vertical: 6),
                               ),
                               onSubmitted: (_) => _masuk(),
                             ),
                             const SizedBox(height: 16),
-                            const Text('Password',
-                                style: AppStyles.h3),
-                            const SizedBox(height: 6),
                             TextField(
                               controller: _password,
                               obscureText: !_tampilPassword,
                               enabled: !sibuk,
                               decoration: InputDecoration(
-                                hintText: '••••••••',
+                                hintText: 'Password',
+                                hintStyle: const TextStyle(
+                                    color: Color(0xFF0C6FA4)),
+                                contentPadding:
+                                    const EdgeInsets.symmetric(
+                                        horizontal: 14,
+                                        vertical: 6),
                                 prefixIcon: const Icon(
-                                    Icons.lock_outline),
+                                    Icons.lock_outline,
+                                    color: Color(0xFF0C6FA4)),
                                 suffixIcon: IconButton(
                                   onPressed: () => setState(() =>
                                       _tampilPassword =
@@ -154,12 +173,27 @@ class _LoginPageState extends State<LoginPage> {
                                     _tampilPassword
                                         ? Icons.visibility_off_outlined
                                         : Icons.visibility_outlined,
+                                    color: const Color(0xFF0C6FA4),
                                   ),
                                 ),
                               ),
                               onSubmitted: (_) => _masuk(),
                             ),
-                            const SizedBox(height: 24),
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: TextButton(
+                                onPressed: sibuk ? null : () {},
+                                child: const Text(
+                                  'Forgot Password?',
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w600,
+                                    color: Color(0xFF0B4C7C),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 8),
                             ElevatedButton(
                               onPressed: sibuk ? null : _masuk,
                               child: sibuk

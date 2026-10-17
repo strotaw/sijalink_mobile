@@ -97,14 +97,14 @@ class SpkPage extends StatelessWidget {
                                 const EdgeInsets.all(
                                     10),
                             decoration: BoxDecoration(
-                                color: AppColors.infoBg,
+                                color: _statusBg(spk.status),
                                 borderRadius:
                                     BorderRadius.circular(
                                         16)),
-                            child: const Icon(
-                                Icons.assignment,
-                                color:
-                                    AppColors.primary),
+                            child: Icon(
+                                _statusIcon(spk.status),
+                                color: _statusColor(
+                                    spk.status)),
                           ),
                           title: Text(
                               '${spk.no} • ${spk.jenis}',
@@ -178,5 +178,38 @@ class SpkPage extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+IconData _statusIcon(SpkStatus st) {
+  switch (st) {
+    case SpkStatus.baru:
+      return Icons.assignment;
+    case SpkStatus.proses:
+      return Icons.build; // kunci inggris
+    case SpkStatus.selesai:
+      return Icons.check_circle_outline;
+  }
+}
+
+Color _statusColor(SpkStatus st) {
+  switch (st) {
+    case SpkStatus.baru:
+      return AppColors.primary;
+    case SpkStatus.proses:
+      return AppColors.warning;
+    case SpkStatus.selesai:
+      return AppColors.success;
+  }
+}
+
+Color _statusBg(SpkStatus st) {
+  switch (st) {
+    case SpkStatus.baru:
+      return AppColors.infoBg;
+    case SpkStatus.proses:
+      return AppColors.warningBg;
+    case SpkStatus.selesai:
+      return AppColors.successBg;
   }
 }

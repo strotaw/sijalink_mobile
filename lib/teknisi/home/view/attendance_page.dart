@@ -8,6 +8,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/theme/responsive.dart';
 import '../../attendance/bloc/attendance_cubit.dart';
+import 'attendance_detail_page.dart';
 
 class AttendancePage extends StatefulWidget {
   final bool showReport;
@@ -373,32 +374,85 @@ class _AttendancePageState extends State<AttendancePage> {
     final pulang = pertama(PresensiJenis.checkOut);
     final izin = pertama(PresensiJenis.izin);
 
+    // Penanda cepat di list — detail lengkap ada di halaman detail.
+    final terlambat =
+        masuk == null ? null : hitungTerlambatMenit(masuk.jam);
+    String? statusTeks;
+    Color? statusWarna;
+    if (izin != null) {
+      statusTeks = 'Izin';
+      statusWarna = AppColors.info;
+    } else if (terlambat != null) {
+      if (terlambat > 0) {
+        statusTeks = 'Terlambat';
+        statusWarna = AppColors.danger;
+      } else {
+        statusTeks = 'Tepat Waktu';
+        statusWarna = AppColors.success;
+      }
+    }
+
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
-      decoration: AppStyles.card,
-      padding: const EdgeInsets.all(14),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(_tgl(grup.key),
-              style: const TextStyle(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 14,
-                  color: AppColors.textDark)),
-          const SizedBox(height: 8),
-          if (masuk != null)
-            _barisHari(Icons.login,
-                AppColors.success, 'Check-In', masuk.jam),
-          if (pulang != null)
-            _barisHari(Icons.logout,
-                AppColors.warning, 'Check-Out', pulang.jam),
-          if (izin != null)
-            _barisHari(
-                Icons.medical_services_outlined,
-                AppColors.info,
-                izin.keterangan ?? 'Izin',
-                izin.jam),
-        ],
+      child: Material(
+        color: Colors.transparent,
+        child: Ink(
+          decoration: AppStyles.card,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(24),
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => AttendanceDetailPage(
+                  tanggal: grup.key,
+                  records: grup.value,
+                ),
+              ),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(14),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(_tgl(grup.key),
+                            style: const TextStyle(
+                                fontWeight: FontWeight.w700,
+                                fontSize: 14,
+                                color: AppColors.textDark)),
+                      ),
+                      if (statusTeks != null) ...[
+                        Text(statusTeks,
+                            style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w700,
+                                color: statusWarna)),
+                        const SizedBox(width: 4),
+                      ],
+                      const Icon(Icons.chevron_right,
+                          color: AppColors.textGrey, size: 18),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  if (masuk != null)
+                    _barisHari(Icons.login, AppColors.success,
+                        'Check-In', masuk.jam),
+                  if (pulang != null)
+                    _barisHari(Icons.logout, AppColors.warning,
+                        'Check-Out', pulang.jam),
+                  if (izin != null)
+                    _barisHari(
+                        Icons.medical_services_outlined,
+                        AppColors.info,
+                        izin.keterangan ?? 'Izin',
+                        izin.jam),
+                ],
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }

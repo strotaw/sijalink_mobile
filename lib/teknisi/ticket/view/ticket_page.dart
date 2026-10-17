@@ -97,15 +97,14 @@ class TicketPage extends StatelessWidget {
                                 const EdgeInsets.all(
                                     10),
                             decoration: BoxDecoration(
-                                color: AppColors.infoBg,
+                                color: _statusBg(t.status),
                                 borderRadius:
                                     BorderRadius.circular(
                                         16)),
-                            child: const Icon(
-                                Icons
-                                    .confirmation_number_outlined,
-                                color:
-                                    AppColors.primary),
+                            child: Icon(
+                                _statusIcon(t.status),
+                                color: _statusColor(
+                                    t.status)),
                           ),
                           title: Text(
                               '${t.no} • ${t.judul}',
@@ -179,5 +178,38 @@ class TicketPage extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+IconData _statusIcon(TicketStatus st) {
+  switch (st) {
+    case TicketStatus.baru:
+      return Icons.confirmation_number_outlined;
+    case TicketStatus.proses:
+      return Icons.build; // kunci inggris
+    case TicketStatus.selesai:
+      return Icons.check_circle_outline;
+  }
+}
+
+Color _statusColor(TicketStatus st) {
+  switch (st) {
+    case TicketStatus.baru:
+      return AppColors.primary;
+    case TicketStatus.proses:
+      return AppColors.warning;
+    case TicketStatus.selesai:
+      return AppColors.success;
+  }
+}
+
+Color _statusBg(TicketStatus st) {
+  switch (st) {
+    case TicketStatus.baru:
+      return AppColors.infoBg;
+    case TicketStatus.proses:
+      return AppColors.warningBg;
+    case TicketStatus.selesai:
+      return AppColors.successBg;
   }
 }
